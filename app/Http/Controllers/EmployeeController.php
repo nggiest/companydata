@@ -14,7 +14,6 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employee=Employee::all();
         $employee=Employee::paginate(5);
         return view('employees.index', compact('employee'));
     }
@@ -71,7 +70,14 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (Auth::check())
+            {
+                $employee=Employee::findOrFail($id);
+                return view('employees.edit', compact('employee'));
+            }
+        else {
+                return redirect()->route('login');
+        }
     }
 
     /**
@@ -83,7 +89,18 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name_employee' => 'required',
+            'id_company' => 'required',
+            'email' => 'required',
+        ]);
+
+        $employee = Employee::findOfFail($id);
+        $employee->update([
+            'nama_employee' => $request['name_employee'],
+            'id_company' => $request['id_company'],
+            'email' => $request['email'],
+        ]);
     }
 
     /**
@@ -94,6 +111,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $employee=Employee::findOrFail($id);
+        $employee->delete();
     }
 }

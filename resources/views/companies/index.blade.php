@@ -1,17 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>List Company</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+            <div class="card-header">
+        <h3> List Perusahaan </h3> 
+        </div>
+    <div class="card-body"> 
+    <form action="{{route('company.create')}}"> <button class="pull-right btn btn-success " ><i class="fa fa-plus"></i> Tambah Perusahaan </button> </form>
     <table>
-        <td>No</td>
-        <td>Nama Perusahaan</td>
-        <td>Logo</td>
-        <td>Action</td>
+        <thead> 
+        <tr>
+            <th>No</th>
+            <th>Nama Perusahaan</th>
+            <th>Email</th>
+            <th>Logo</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            @php (
+                $no = 1
+            )
+            @foreach ($company as $pt)
+            <tr>
+                <td>{{$no++}}</td>
+                <td>{{$pt->name}}</td>
+                <td>{{$pt->email}}</td>
+                <td>{{$pt->logo}} </td>
+                <td>
+                    <form action="{{route('company.edit', $pt->id)}}">  
+                        <button type="submit" value="Edit"> Edit </button>  |
+                        <form action="{{route('company.destroy', $pt->id)}}" method="POST">
+                        {{csrf_field()}}
+                        {{method_field('DELETE')}}
+                        <button class="btn btn-success" type="submit" value="Delete"> Delete </button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
     </table>
-</body>
-</html>
+    </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

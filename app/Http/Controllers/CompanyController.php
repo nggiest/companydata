@@ -15,7 +15,7 @@ class CompanyController extends Controller
     public function index()
     {
         $company = Company::all();
-        return view('companies.index', compact('company'));
+        return view('companies.index',compact('company'));
     }
 
     /**
@@ -25,7 +25,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        return view('companies.add');
     }
 
     /**
@@ -36,24 +36,22 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
         $this->validate($request, [
             'name' => 'required|max:128',
             'email'=> 'required',
-            'logo' => 'required|mimes:png',
+            'logo' => 'required|mimes:png|max:2048',
             
         ]);
-        $company = Company::all();
-        $uploadedFile = $request->file('file');
-        $destinationPath = ('storage/app/company');   
-        $extension =  $uploadedFile->getClientOriginalExtension();
-        $logo = Uuid::generate(4).'.'.$extension;    
-        $file = ProjectFile::create([
+        $logoName = $request->logo->getClientOriginalName() . '-' . time() . '.' . $request->logo->extension();
+        $request->logo->move(public_path('image'));
+        Company::create([
             'name' => $request->name,
-            'logo' => $logo,
+            'logo' => $logoName,
             'email' => $request->email,
-            
             ]);
-        $uploadedFile->storeAs($destinationPath,$logo);
+        
+            return redirect()->route('company.index');
     }
 
     /**
@@ -75,7 +73,8 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
-        //
+        $company = Company::findOrFail($id);
+        return view('companies.edit', compact('company'));
     }
 
     /**

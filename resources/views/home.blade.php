@@ -15,6 +15,13 @@
                     @endif
 
                     {{ __('You are logged in!') }}
+                    <br>
+                    <br>
+                    <form action="{{route('company.index')}}">  
+                    <button class="btn btn-success" type="submit" value="Company"> List Perusahaan </button> </form> <br> <br>
+                    <form action="{{route('employee.index')}}">  
+                    <button class="btn btn-success" type="submit" value="Company"> List Pegawai </button> </form>
+
                 </div>
             </div>
         </div>

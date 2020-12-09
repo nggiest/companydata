@@ -14,7 +14,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $company = Company::all();
+        $company = Company::paginate(5);
         return view('companies.index',compact('company'));
     }
 
@@ -36,7 +36,7 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+       
         $this->validate($request, [
             'name' => 'required|max:128',
             'email'=> 'required',
@@ -44,14 +44,14 @@ class CompanyController extends Controller
             
         ]);
         $logoName = $request->logo->getClientOriginalName() . '-' . time() . '.' . $request->logo->extension();
-        $request->logo->move(public_path('image'));
+        $request->logo->move(public_path('storage'), $logoName);
         Company::create([
             'name' => $request->name,
             'logo' => $logoName,
             'email' => $request->email,
             ]);
         
-            return redirect()->route('company.index');
+        return redirect()->route('company.index');
     }
 
     /**
@@ -86,7 +86,30 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+       
+        $this->validate($request, [
+            'name' => 'required|max:128',
+            'email'=> 'required',
+           
+            
+        ]);
+        
+        $company=Company::findOrFail($id);
+
+        $company->name = $request->name;
+        $company->email = $request->email;
+        $company->save();
+       
+        if (empty($request->logo)){
+            $company->logo = $company->logo;
+        }
+        else{
+            $logoName = $request->logo->getClientOriginalName() . '-' . time() . '.' . $request->logo->extension();
+            $request->logo->move(public_path('storage'), $logoName);
+        }
+        $company->save();
+        
+        return redirect()->route('company.index');
     }
 
     /**
@@ -97,6 +120,8 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $company=Company::findOrFail($id);
+        $company->delete();
+        return redirect()->route('company.index');
     }
 }

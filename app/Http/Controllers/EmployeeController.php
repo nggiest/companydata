@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Employee;
+use App\Company;
+use Auth;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
@@ -14,6 +17,11 @@ class EmployeeController extends Controller
      */
     public function index()
     {
+       
+        $employee=DB::table('employees')
+        ->join ('companies','companies.id','=','employees.id_company')
+        ->select('employees.*','companies.name as companies')
+        ->get();
         $employee=Employee::paginate(5);
         return view('employees.index', compact('employee'));
     }
@@ -25,7 +33,8 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view ('employees.create');
+        $company = Company::all();
+        return view ('employees.add', compact('company'));
     }
 
     /**
@@ -36,18 +45,15 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $employee = Employee::all();
         $this->validate($request, [
             'name_employee' => 'required',
             'id_company' => 'required',
             'email' => 'required',
         ]);
-
-        $employee = Employee::created([
-            'nama_employee' => $request['name_employee'],
-            'id_company' => $request['id_company'],
-            'email' => $request['email'],
-        ]);
+        
+        $employee = Employee::create($request->all());
+        
+        return redirect()->route('employee.index');
     }
 
     /**
@@ -73,7 +79,8 @@ class EmployeeController extends Controller
         if (Auth::check())
             {
                 $employee=Employee::findOrFail($id);
-                return view('employees.edit', compact('employee'));
+                $company=Company::all();
+                return view('employees.edit', compact('employee','company'));
             }
         else {
                 return redirect()->route('login');
@@ -95,12 +102,14 @@ class EmployeeController extends Controller
             'email' => 'required',
         ]);
 
-        $employee = Employee::findOfFail($id);
+        $employee = Employee::findOrFail($id);
         $employee->update([
             'nama_employee' => $request['name_employee'],
             'id_company' => $request['id_company'],
             'email' => $request['email'],
         ]);
+
+        return redirect()->route('employee.index');
     }
 
     /**
@@ -113,5 +122,6 @@ class EmployeeController extends Controller
     {
         $employee=Employee::findOrFail($id);
         $employee->delete();
+        return redirect()->route('employee.index');
     }
 }

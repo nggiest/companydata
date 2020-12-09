@@ -9,7 +9,7 @@
             </div>
 
             <div class="card-body"> 
-                <form method="POST" action="{{route('company.store')}}">
+                <form method="POST" action="{{route('company.store')}}" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="form-group">
                     <label for="Company Name">Nama Perusahaan</label>
@@ -37,7 +37,7 @@
                     <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
                 </div>
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="logo" name="logo" aria-describedby="inputGroupFileAddon01">
+                    <input type="file" class="custom-file-input" id="logo" name="logo">
                     <label class="custom-file-label" for="inputGroupFile01">Pilih Logo</label>
                 </div>
                 </div>

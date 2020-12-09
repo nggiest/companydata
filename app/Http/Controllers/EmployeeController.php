@@ -18,12 +18,19 @@ class EmployeeController extends Controller
     public function index()
     {
        
+        if (Auth::check())
+        {
         $employee=DB::table('employees')
         ->join ('companies','companies.id','=','employees.id_company')
-        ->select('employees.*','companies.name as companies')
+        ->select('employees.*','companies.name as perusahaans')
         ->get();
         $employee=Employee::paginate(5);
+       
         return view('employees.index', compact('employee'));
+        }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**
@@ -33,8 +40,14 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $company = Company::all();
-        return view ('employees.add', compact('company'));
+        if (Auth::check())
+        {
+            $company = Company::all();
+            return view ('employees.add', compact('company'));
+        }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**
@@ -64,8 +77,14 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        $employee = Employee::findOrFail($id);
-        return view('employees.edit', compact('employees'));
+        if (Auth::check())
+        {
+            $employee = Employee::findOrFail($id);
+            return view('employees.edit', compact('employees'));
+        }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**

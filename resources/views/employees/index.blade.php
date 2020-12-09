@@ -29,7 +29,7 @@
                                 <td>{{$no++}}</td>
                                 <td>{{$pgw->name_employee}}</td>
                                 <td>{{$pgw->email}}</td>
-                                <td>{{$pgw->companies}} </td>
+                                <td> <?=$pgw->perusahaans ?> </td>
                                 <td>
                                         <form action="{{route('employee.edit', $pgw->id)}}">  
                                         <button class="btn btn-success" type="submit" value="Edit"> Edit </button> </form> </td>

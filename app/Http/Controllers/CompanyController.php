@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Company;
+use App\Employee;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -14,8 +16,14 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $company = Company::paginate(5);
-        return view('companies.index',compact('company'));
+        if (Auth::check())
+        {
+            $company = Company::paginate(5);
+            return view('companies.index',compact('company'));
+        }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**
@@ -25,7 +33,13 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('companies.add');
+        if (Auth::check())
+        {
+            return view('companies.add');
+        }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**
@@ -73,8 +87,15 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
+        if (Auth::check())
+        {
         $company = Company::findOrFail($id);
         return view('companies.edit', compact('company'));
+        }
+
+        else {
+            return redirect()->route('login');
+        }
     }
 
     /**
@@ -121,6 +142,15 @@ class CompanyController extends Controller
     public function destroy($id)
     {
         $company=Company::findOrFail($id);
+        if(Employee::where('id_company', $id)->exists())
+        {
+            $employee=Employee::select('*')->where('id_company',$id)->get();
+
+            foreach($employee as $pgw){
+                $pgw->delete();
+            }
+        }
+
         $company->delete();
         return redirect()->route('company.index');
     }
